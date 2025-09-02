@@ -7,7 +7,13 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:3000', 'https://your-netlify-app.netlify.app'], // TODO: Add your actual Netlify URL
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:8000', 
+    'http://127.0.0.1:5500',
+    'http://127.0.0.1:8000',
+    'https://your-netlify-app.netlify.app'
+  ], // Local development + Netlify URL
   credentials: true
 }));
 app.use(express.json());
