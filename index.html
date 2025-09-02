@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chat with Saw Bhone Htet — Personal AI Assistant</title>
+  <style>
+    :root { --card:#fff; --muted:#f4f4f5; --text:#111; --sub:#666; }
+    body { font-family: system-ui, Arial, sans-serif; background: var(--muted); margin: 0; }
+    .wrap { max-width: 880px; margin: 24px auto; padding: 0 16px; }
+    .grid { display: grid; gap: 16px; grid-template-columns: 1fr 320px; }
+    
+    /* Modal Styles */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000; animation: fadeIn 0.3s ease; }
+    .modal-content { background: white; border-radius: 20px; padding: 32px; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3); animation: slideUp 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .modal-header h2 { margin: 15px 0 10px; color: #1f2937; }
+    .modal-profile-img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; border: 3px solid #3b82f6; }
+    .modal-intro { color: #666; margin-bottom: 25px; line-height: 1.5; }
+    .modal-body .field { margin-bottom: 20px; text-align: left; }
+    .modal-body input { width: 100%; padding: 12px 16px; border: 2px solid #ddd; border-radius: 10px; font-size: 16px; }
+    .modal-body input:focus { border-color: #3b82f6; outline: none; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+    .start-chat-btn { width: 100%; padding: 12px; background: #3b82f6; color: white; border: 0; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; margin-bottom: 15px; }
+    .start-chat-btn:hover:not(:disabled) { background: #2563eb; }
+    .start-chat-btn:disabled { background: #ccc; cursor: not-allowed; }
+    .modal-hint { font-size: 14px; color: #666; margin: 0; }
+    
+    /* Main Content - Hidden by default */
+    .main-content { display: none; }
+    .main-content.hidden { display: none; }
+    .user-info { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding: 10px; background: #f8f9fa; border-radius: 8px; }
+    .user-name { font-weight: bold; color: #2563eb; }
+    .change-name-btn { padding: 4px 8px; background: #e5e7eb; border: 0; border-radius: 6px; font-size: 12px; cursor: pointer; }
+    .change-name-btn:hover { background: #d1d5db; }
+    .grid { display: grid; gap: 16px; grid-template-columns: 1fr 320px; }
+    .card { background: var(--card); border-radius: 14px; box-shadow: 0 6px 24px rgba(0,0,0,.06); }
+    .chat { height: 520px; display: flex; flex-direction: column; }
+    .msgs { flex: 1; overflow-y: auto; padding: 16px; }
+    .row { margin: 10px 0; line-height: 1.45; }
+    .row .who { font-weight: 700; margin-right: 6px; }
+    .row.user { color: #2563eb; }
+    .row.ai { color: #16a34a; display: flex; align-items: start; gap: 8px; }
+    .row.system { color: #b45309; }
+    .composer { display: flex; gap: 8px; border-top: 1px solid #eee; padding: 12px; }
+    input[type=text] { flex: 1; padding: 10px 12px; border-radius: 10px; border: 1px solid #ddd; }
+    button { padding: 10px 14px; border: 0; border-radius: 10px; background: #111; color: #fff; cursor: pointer; }
+    .memory-section button { width: 100%; margin-top: 4px; }
+    button[disabled] { opacity: .5; cursor: not-allowed; }
+    .side { padding: 16px; }
+    .settings-section, .info-section { margin-bottom: 16px; }
+    .field { display: grid; gap: 6px; margin-bottom: 12px; }
+    .field input { padding: 8px 10px; border: 1px solid #ddd; border-radius: 10px; }
+    .toggle { display: flex; align-items: center; gap: 8px; margin: 8px 0 12px; color: var(--sub); }
+    .hint { color: var(--sub); font-size: 13px; line-height: 1.4; }
+    .pill { font-size: 12px; padding: 2px 8px; border-radius: 999px; background: #eef2ff; color: #3730a3; }
+    .ai-controls { display:inline-flex; gap:6px; align-items:center; }
+    .replay { background:#0ea5e9; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <!-- Name Input Modal (appears first) -->
+    <div id="name-modal" class="modal-overlay" style="display: flex;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <img src="https://www.dropbox.com/scl/fi/fogsoodcimeqlo99a6se9/my-logo.png?rlkey=guizxlzukoo71kz422r3k7ukd&st=sb8u2qng&raw=1" 
+               alt="Saw Bhone Htet" 
+               class="modal-profile-img" />
+          <h2>Chat with Saw Bhone Htet</h2>
+          <p class="modal-intro">Hi! I'm Saw Bhone Htet's personal AI assistant. Please introduce yourself first:</p>
+        </div>
+        
+        <div class="modal-body">
+          <div class="field">
+            <label>What's your name?</label>
+            <input id="modal-name-input" placeholder="Enter your name here..." autofocus />
+          </div>
+          <button onclick="startChat()" class="start-chat-btn" id="start-btn" disabled>Start Chatting</button>
+          <p class="modal-hint">
+            👋 I'll address you by name and share details about Saw Bhone Htet's work and experiences.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Original Layout (hidden until name entered) -->
+    <div id="main-content" class="main-content hidden">
+      <div class="grid">
+        <!-- Chat -->
+        <div class="card chat">
+          <div id="msgs" class="msgs"></div>
+          <div class="composer">
+            <input id="user-input" type="text" placeholder="Ask me anything about Saw Bhone Htet..." />
+            <button id="send-btn" onclick="sendMessage()">Send</button>
+          </div>
+        </div>
+
+        <!-- Settings Panel -->
+        <div class="card side">
+          <div class="user-info">
+            <span class="user-name" id="display-name">Guest</span>
+            <button onclick="changeName()" class="change-name-btn">Change Name</button>
+          </div>
+          
+          <div class="settings-section">
+            <div class="toggle">
+              <input id="tts-toggle" type="checkbox" checked />
+              <label for="tts-toggle">🔊 Enable voice replies</label>
+            </div>
+          </div>
+          
+          <div class="info-section">
+            <p class="hint">
+              💡 <strong>Tips:</strong> Ask about Saw's work experience, hobbies, or projects • Click 🔊 replay to hear responses
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
