@@ -30,8 +30,8 @@
     .main-content.hidden { display: none; }
     .user-info { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding: 10px; background: #f8f9fa; border-radius: 8px; }
     .user-name { font-weight: bold; color: #2563eb; }
-    .change-name-btn { padding: 4px 8px; background: #e5e7eb; border: 0; border-radius: 6px; font-size: 12px; cursor: pointer; }
-    .change-name-btn:hover { background: #d1d5db; }
+   .change-name-btn { padding: 4px 8px; background: #000000; border: 0; border-radius: 6px; font-size: 12px; cursor: pointer; }
+    .change-name-btn:hover { background: #818181; }
     .grid { display: grid; gap: 16px; grid-template-columns: 1fr 320px; }
     .card { background: var(--card); border-radius: 14px; box-shadow: 0 6px 24px rgba(0,0,0,.06); }
     .chat { height: 520px; display: flex; flex-direction: column; }
@@ -55,6 +55,8 @@
     .pill { font-size: 12px; padding: 2px 8px; border-radius: 999px; background: #eef2ff; color: #3730a3; }
     .ai-controls { display:inline-flex; gap:6px; align-items:center; }
     .replay { background:#0ea5e9; }
+    .logo img { width: 250px; padding-bottom: 40%;  }
+
   </style>
 </head>
 <body>
@@ -106,6 +108,9 @@
             <div class="toggle">
               <input id="tts-toggle" type="checkbox" checked />
               <label for="tts-toggle">🔊 Enable voice replies</label>
+            </div>
+            <div class="logo">
+             <img src="https://www.dropbox.com/scl/fi/fogsoodcimeqlo99a6se9/my-logo.png?rlkey=guizxlzukoo71kz422r3k7ukd&st=sb8u2qng&raw=1" >
             </div>
           </div>
           
