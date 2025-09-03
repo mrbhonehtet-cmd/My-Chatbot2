@@ -3,7 +3,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 
 // Middleware
 app.use(cors({
@@ -20,7 +20,7 @@ app.use(express.json());
 
 // OpenRouter configuration
 const OR_URL = "https://openrouter.ai/api/v1/chat/completions";
-const MODEL = "deepseek/deepseek-chat-v3-0324:free";
+const MODEL = "google/gemma-2-9b-it:free";
 
 // Developer personal info (same as frontend)
 const personalData = {
@@ -32,6 +32,11 @@ const personalData = {
     "Worked with FRI Group on developing a local clothing brand",
     "Founder of a manga translation page (hobby project)",
     "Junior UI/UX Designer at Shwe Bank Company"
+  ],
+ Education: [
+  "Graduated Grade 10 at No.3 B.E.H.S School, Tharkayta",
+  "Computer Foundation at KMD",
+  "Attending Diploma at Gusto College"
   ],
   hobbies: ["Swimming", "Cycling", "Watching anime and movie series"],
   summary:
@@ -49,6 +54,7 @@ About ${personalData.name}:
 - Name: ${personalData.name}
 - Age: ${personalData.age} (Born on ${personalData.dateOfBirth})
 - Profession: ${personalData.profession}
+- Education: ${personalData.Education.join("\n  • ")}
 - Work Experience:
   • ${personalData.workExperience.join("\n  • ")}
 - Hobbies: ${personalData.hobbies.join(", ")}
@@ -68,6 +74,11 @@ Behavior rules:
 // Health check endpoint
 app.get('/', (req, res) => {
   res.json({ status: 'Backend is running', timestamp: new Date().toISOString() });
+});
+
+// Additional health check for Render
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
 });
 
 // Chat endpoint
