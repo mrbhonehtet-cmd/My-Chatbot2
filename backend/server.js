@@ -20,7 +20,7 @@ app.use(express.json());
 
 // OpenRouter configuration
 const OR_URL = "https://openrouter.ai/api/v1/chat/completions";
-const MODEL = "google/gemma-2-9b-it:free";
+const MODEL = "meta-llama/llama-3.1-8b-instruct:free";
 
 // Developer personal info (same as frontend)
 const personalData = {
