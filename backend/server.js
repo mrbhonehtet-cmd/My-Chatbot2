@@ -12,7 +12,7 @@ app.use(cors({
     'http://localhost:8000', 
     'http://127.0.0.1:5500',
     'http://127.0.0.1:8000',
-    'https://dulcet-otter-bfa1e4.netlify.app'
+    'https://vocal-vacherin-d54e9b.netlify.app'
   ], // Local development + Netlify URL
   credentials: true
 }));
