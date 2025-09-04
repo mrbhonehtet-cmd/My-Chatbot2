@@ -20,7 +20,7 @@ app.use(express.json());
 
 // OpenRouter configuration
 const OR_URL = "https://openrouter.ai/api/v1/chat/completions";
-const MODEL = "openai/gpt-oss-120b:free";
+const MODEL = "mistralai/mistral-7b-instruct:free";
 
 // Developer personal info (same as frontend)
 const personalData = {
