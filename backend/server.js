@@ -61,7 +61,7 @@ About ${personalData.name}:
 - Summary: ${personalData.summary}
 
 Behavior rules:
-- ALWAYS start your response by addressing the user by their name: "Hi ${userName}," or "Hello ${userName},"
+- ALWAYS start your response by addressing the user by their name: "Hi ${mem.name}," or "Hello ${mem.name},"
 - For questions about ${personalData.name}, provide detailed information from the profile above
 - For general questions, give helpful answers but mention ${personalData.name} when relevant
 - Keep answers conversational and friendly (2-4 sentences)
