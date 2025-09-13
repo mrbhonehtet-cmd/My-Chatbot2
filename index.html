@@ -4,9 +4,10 @@
   <meta charset="UTF-8" />
   <title>Chat with Saw Bhone Htet — Personal AI Assistant</title>
   <style>
+  
     :root { --card:#fff; --muted:#f4f4f5; --text:#111; --sub:#666; }
     body { font-family: system-ui, Arial, sans-serif; background: var(--muted); margin: 0; }
-    .wrap { max-width: 880px; margin: 24px auto; padding: 0 16px; }
+    .wrap { max-width: 880px; margin: 24px auto; padding: 75px 16px; }
     .grid { display: grid; gap: 16px; grid-template-columns: 1fr 320px; }
     
     /* Modal Styles */
@@ -24,13 +25,81 @@
     .start-chat-btn:hover:not(:disabled) { background: #2563eb; }
     .start-chat-btn:disabled { background: #ccc; cursor: not-allowed; }
     .modal-hint { font-size: 14px; color: #666; margin: 0; }
+
+     /* Mobile Responsiveness */
+  @media (max-width: 768px) {
+    .grid {
+      grid-template-columns: 1fr; /* Stack chat and side panel */
+    }
+
+    .chat {
+      height: 400px; /* Reduce chat height on small screens */
+    }
+
+    .composer input[type=text] {
+      padding: 8px 10px;
+    }
+
+    .composer button {
+      padding: 8px 10px;
+    }
+
+    .side {
+      padding: 12px;
+    }
+
+    .user-info {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .user-info .user-name {
+      font-size: 16px;
+    }
+
+    .change-name-btn {
+      margin-top: 6px;
+      font-size: 11px;
+    }
+
+    .modal-content {
+      padding: 24px;
+    }
+
+    .modal-profile-img {
+      width: 60px;
+      height: 60px;
+    }
+
+    .modal-header h2 {
+      font-size: 18px;
+    }
+
+    .modal-intro {
+      font-size: 14px;
+    }
+
+    .start-chat-btn {
+      font-size: 14px;
+      padding: 10px;
+    }
+
+    .msgs {
+      padding: 12px;
+    }
+
+    .logo img {
+      width: 180px;
+      padding-bottom: 30%;
+    }
+  }
     
     /* Main Content - Hidden by default */
     .main-content { display: none; }
     .main-content.hidden { display: none; }
     .user-info { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding: 10px; background: #f8f9fa; border-radius: 8px; }
     .user-name { font-weight: bold; color: #2563eb; }
-   .change-name-btn { padding: 4px 8px; background: #000000; border: 0; border-radius: 6px; font-size: 12px; cursor: pointer; }
+    .change-name-btn { padding: 4px 8px; background: #000000; border: 0; border-radius: 6px; font-size: 12px; cursor: pointer; }
     .change-name-btn:hover { background: #818181; }
     .grid { display: grid; gap: 16px; grid-template-columns: 1fr 320px; }
     .card { background: var(--card); border-radius: 14px; box-shadow: 0 6px 24px rgba(0,0,0,.06); }
@@ -56,11 +125,12 @@
     .ai-controls { display:inline-flex; gap:6px; align-items:center; }
     .replay { background:#0ea5e9; }
     .logo img { width: 250px; padding-bottom: 40%;  }
-
   </style>
 </head>
 <body>
   <div class="wrap">
+  
+
     <!-- Name Input Modal (appears first) -->
     <div id="name-modal" class="modal-overlay" style="display: flex;">
       <div class="modal-content">
@@ -113,6 +183,7 @@
              <img src="https://www.dropbox.com/scl/fi/fogsoodcimeqlo99a6se9/my-logo.png?rlkey=guizxlzukoo71kz422r3k7ukd&st=sb8u2qng&raw=1" >
             </div>
           </div>
+
           
           <div class="info-section">
             <p class="hint">
