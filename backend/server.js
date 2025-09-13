@@ -27,12 +27,12 @@ const personalData = {
   name: "Saw Bhone Htet",
   age: 20,
   dateOfBirth: "January 13, 2005",
-  profession: "Junior UI/UX Designer",
+  profession: "Junior Frontend Developer and UI/UX Designer",
   workExperience: [
-    "Worked with FRI Group on developing a local clothing brand",
+    "Worked with Fri Group on developing a local clothing brand",
     "Founder of a manga translation page (hobby project)",
-    "Junior UI/UX Designer at Shwe Bank Company",
-    "Junior Frontend Developer"
+    "Junior Frontend Developer and UI/UX Designer at Shwe Bank Company",
+    
   ],
  Education: [
   "Graduated Grade 10 at No.3 B.E.H.S School, Tharkayta",
@@ -41,7 +41,7 @@ const personalData = {
   ],
   hobbies: ["Swimming", "Cycling", "Watching anime and movie series"],
   summary:
-    "I am Saw Bhone Htet, a passionate and creative junior UI/UX designer and Frontend Developer with experience in brand development and digital content creation. With a foundation in design and a strong interest in technology, I enjoy combining creativity with problem-solving. I bring reliability, dedication, and enthusiasm to every project I contribute to."
+    "I am Saw Bhone Htet, a passionate and creative junior Frontend Developer and UI/UX designer with experience in brand development and digital content creation. With a foundation in design and a strong interest in technology, I enjoy combining creativity with problem-solving. I bring reliability, dedication, and enthusiasm to every project I contribute to."
 };
 
 // Create system message
