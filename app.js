@@ -28,6 +28,14 @@ const personalData = {
     "Founder of a manga translation page (hobby project)",
     "Junior Frontend Developer and UI/UX Designer at Shwe Bank Company"
   ],
+    technicalSkills: [
+    "HTML/CSS: I am good at making webpages and styling them.",
+    "JavaScript: I can add interactive features.",
+    "React: I can build components and manage state.",
+    "Node.js: I am just starting to learn backend.",
+    "Tailwind CSS: I can make modern layouts.",
+    "Material-UI: I can use ready-made components and style them."
+  ],
   hobbies: ["Swimming", "Cycling", "Watching anime and movie series"],
   Education: [
     "Graduated Grade 10 at No.3 B.E.H.S School, Tharkayta",
@@ -70,6 +78,7 @@ About ${personalData.name}:
 - Age: ${personalData.age} (Born on ${personalData.dateOfBirth})
 - Profession: ${personalData.profession}
 - Education: ${personalData.Education.join("\n  • ")}
+- technicalSkills ${personalData.technicalSkills.join("\n  • ")}
 - Work Experience:
   • ${personalData.workExperience.join("\n  • ")}
 - Hobbies: ${personalData.hobbies.join(", ")}
