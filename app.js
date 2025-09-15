@@ -359,27 +359,27 @@ if (window.speechSynthesis.speaking) {
   currentButton = buttonElement;
   
   // Update button text when speaking starts
+ if (buttonElement) {
+  buttonElement.innerHTML = '<i class="fa-solid fa-pause"></i> Pause';
+}
+
+// Handle speech end
+u.onend = function() {
   if (buttonElement) {
-    buttonElement.textContent = "⏸️ pause";
+    buttonElement.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Replay';
   }
-  
-  // Handle speech end
-  u.onend = function() {
-    if (buttonElement) {
-      buttonElement.textContent = "🔊 replay";
-    }
-    currentUtterance = null;
-    currentButton = null;
-  };
-  
-  // Handle speech error
-  u.onerror = function() {
-    if (buttonElement) {
-      buttonElement.textContent = "🔊 replay";
-    }
-    currentUtterance = null;
-    currentButton = null;
-  };
+  currentUtterance = null;
+  currentButton = null;
+};
+
+// Handle speech error
+u.onerror = function() {
+  if (buttonElement) {
+    buttonElement.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Replay';
+  }
+  currentUtterance = null;
+  currentButton = null;
+};
   
   window.speechSynthesis.speak(u);
 }
