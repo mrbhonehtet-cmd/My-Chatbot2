@@ -202,7 +202,7 @@ function appendRow(css, who, text, withReplay=false){
     const btn = document.createElement("button");
     btn.className = "replay";
     btn.textContent = "🔊 replay";
-    btn.onclick = () => speak(cleanText); // only play on click
+    btn.onclick = () => speak(cleanText, btn); // pass button reference
     controls.appendChild(btn);
 
     row.appendChild(whoEl);
@@ -318,21 +318,72 @@ async function sendMessage(){
   setBusy(false);
 }
 
-/** Local TTS (manual trigger only) */
-function speak(text){
+/** Local TTS with play/pause functionality */
+let currentUtterance = null;
+let currentButton = null;
+
+function speak(text, buttonElement){
   if (!("speechSynthesis" in window)){
     appendSystem("🔇 This browser doesn't support speechSynthesis.");
     return;
   }
+
+
+
+  // If already speaking, pause/resume
+if (window.speechSynthesis.speaking) {
+  if (window.speechSynthesis.paused) {
+    // Resume
+    window.speechSynthesis.resume();
+    if (currentButton) {
+      currentButton.innerHTML = '<i class="fa-solid fa-pause"></i> Pause';
+    }
+  } else {
+    // Pause
+    window.speechSynthesis.pause();
+    if (currentButton) {
+      currentButton.innerHTML = '<i class="fa-solid fa-play"></i> Resume';
+    }
+  }
+  return;
+}
+
+  // Start new speech
   window.speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
   u.lang = "en-US";
   u.rate = 1.05;
   u.pitch = 1;
+  
+  currentUtterance = u;
+  currentButton = buttonElement;
+  
+  // Update button text when speaking starts
+  if (buttonElement) {
+    buttonElement.textContent = "⏸️ pause";
+  }
+  
+  // Handle speech end
+  u.onend = function() {
+    if (buttonElement) {
+      buttonElement.textContent = "🔊 replay";
+    }
+    currentUtterance = null;
+    currentButton = null;
+  };
+  
+  // Handle speech error
+  u.onerror = function() {
+    if (buttonElement) {
+      buttonElement.textContent = "🔊 replay";
+    }
+    currentUtterance = null;
+    currentButton = null;
+  };
+  
   window.speechSynthesis.speak(u);
 }
 
 /** Wire UI events */
 if (sendBtn) sendBtn.addEventListener("click", sendMessage);
 if (inputEl) inputEl.addEventListener("keydown", (e) => { if (e.key === "Enter") sendMessage(); });
-
