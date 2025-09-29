@@ -2,15 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Chat with Saw Bhone Htet — Personal AI Assistant</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
   <style>
   
-    :root { --card:#fff; --muted:#f4f4f5; --text:#111; --sub:#666; }
-    body { font-family: system-ui, Arial, sans-serif; background: var(--muted); margin: 0; }
-    .wrap { max-width: 880px; margin: 24px auto; padding: 75px 16px; }
-    .grid { display: grid; gap: 16px; grid-template-columns: 1fr 320px; }
+    :root { --card:#fff; --muted:#f5f6f8; --text:#111; --sub:#666; --radius:14px; --app-vh: 1vh; }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body { font-family: system-ui, Arial, sans-serif; background: var(--muted); color: var(--text); margin: 0; -webkit-font-smoothing: antialiased; }
+    body.no-scroll { overflow: hidden; }
+    .wrap { max-width: 1024px; margin: 0 auto; padding: 16px; padding-top: clamp(48px, 8vh, 96px); }
+    .grid { display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr) 320px; align-items: start; }
     
     /* Modal Styles */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000; animation: fadeIn 0.3s ease; }
@@ -30,13 +32,13 @@
 
      /* Mobile Responsiveness */
   @media (max-width: 768px) {
-    .grid {
-      grid-template-columns: 1fr; /* Stack chat and side panel */
-    }
+    .wrap { padding: 0; }
+    .grid { grid-template-columns: 1fr; gap: 0; min-height: calc((var(--app-vh, 1vh) * 100)); }
 
-    .chat {
-      height: 400px; /* Reduce chat height on small screens */
-    }
+    /* Full-screen chat on mobile */
+    .chat { position: relative; width: 100%; max-width: none; height: calc((var(--app-vh, 1vh) * 100)); border-radius: 0; }
+    /* Keep a small top space for the settings pill without shrinking viewport */
+    .chat .msgs { padding-top: 44px; }
 
     .composer input[type=text] {
       padding: 8px 10px;
@@ -46,9 +48,86 @@
       padding: 8px 10px;
     }
 
-    .side {
-      padding: 12px;
+    /* Side panel becomes a slide-in drawer on mobile */
+    .side { 
+      position: fixed; 
+      top: 0; 
+      right: 0; 
+      height: 100dvh; 
+      width: 86vw; 
+      max-width: 360px; 
+      padding: 16px; 
+      margin-top: 0; 
+      box-shadow: -8px 0 24px rgba(0,0,0,.15); 
+      transform: translateX(100%); 
+      transition: transform .28s ease; 
+      z-index: 1100; 
+      display: block; 
+      overflow-y: auto; 
     }
+    .side.open { transform: translateX(0); }
+
+    /* Drawer header with close button */
+    .side .drawer-header { 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      position: sticky; 
+      top: 0; 
+      background: var(--card); 
+      padding: 8px 4px 12px; 
+      margin: -8px 0 8px; 
+      z-index: 1; 
+      border-bottom: 1px solid #eee; 
+    }
+    .side .drawer-title { font-weight: 700; }
+    .side .close-drawer { 
+      border: 0; 
+      background: transparent; 
+      font-size: 18px; 
+      line-height: 1; 
+      padding: 6px; 
+      border-radius: 8px; 
+    }
+    .side .close-drawer:focus-visible { outline: 2px solid #60a5fa; outline-offset: 2px; }
+
+    /* Settings pill button inside chat card (top-right) */
+    .fab-settings { 
+      position: absolute; 
+      top: 8px; 
+      right: 8px; 
+      height: auto;
+      width: auto;
+      padding: 8px 12px; 
+      border-radius: 9999px; 
+      background: linear-gradient(180deg, #111, #1a1a1a); 
+      color: #fff; 
+      border: 1px solid rgba(255,255,255,.12); 
+      display: inline-flex; 
+      align-items: center; 
+      gap: 8px; 
+      box-shadow: 0 6px 16px rgba(0,0,0,.18); 
+      z-index: 5; 
+      cursor: pointer; 
+      font-size: 14px;
+    }
+    .fab-settings:hover { filter: brightness(1.05); }
+    .fab-settings:active { transform: translateY(1px); }
+    .fab-settings:focus-visible { outline: 2px solid #60a5fa; outline-offset: 2px; }
+    .fab-settings .icon { font-size: 16px; line-height: 1; }
+    .fab-settings .label { font-weight: 600; }
+
+    /* Backdrop behind the drawer */
+    .side-backdrop { 
+      position: fixed; 
+      inset: 0; 
+      background: rgba(0,0,0,.35); 
+      z-index: 1050; 
+      opacity: 0; 
+      pointer-events: none; 
+      transition: opacity .2s ease; 
+    }
+    .side-backdrop.show { opacity: 1; pointer-events: auto; }
 
     .user-info {
       flex-direction: column;
@@ -90,10 +169,13 @@
       padding: 12px;
     }
 
-    .logo img {
-      width: 180px;
-      padding-bottom: 30%;
-    }
+    .logo img { width: 160px; padding-bottom: 24%; height: auto; }
+  }
+
+  /* Desktop-only adjustments */
+  @media (min-width: 769px) {
+    /* Hide drawer header on desktop */
+    .side .drawer-header { display: none; }
   }
     
     /* Main Content - Hidden by default */
@@ -103,30 +185,57 @@
     .user-name { font-weight: bold; color: #2563eb; }
     .change-name-btn { padding: 4px 8px; background: #000000; border: 0; border-radius: 6px; font-size: 12px; cursor: pointer; }
     .change-name-btn:hover { background: #818181; }
-    .grid { display: grid; gap: 16px; grid-template-columns: 1fr 320px; }
-    .card { background: var(--card); border-radius: 14px; box-shadow: 0 6px 24px rgba(0,0,0,.06); }
-    .chat { height: 520px; display: flex; flex-direction: column; }
-    .msgs { flex: 1; overflow-y: auto; padding: 16px; }
+    .grid { display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr) 320px; }
+    .card { background: var(--card); border-radius: 14px; box-shadow: 0 6px 24px rgba(0,0,0,.06); overflow: hidden; }
+    .chat { height: min(62vh, 640px); display: flex; flex-direction: column; overflow: hidden; }
+    .msgs { flex: 1; overflow-y: auto; padding: 16px 16px 24px; overscroll-behavior-y: contain; scroll-behavior: smooth; position: relative; z-index: 1; }
     .row { margin: 10px 0; line-height: 1.45; }
     .row .who { font-weight: 700; margin-right: 6px; }
     .row.user { color: #2563eb; }
     .row.ai { color: #16a34a; display: flex; align-items: start; gap: 8px; }
     .row.system { color: #b45309; }
-    .composer { display: flex; gap: 8px; border-top: 1px solid #eee; padding: 12px; }
-    input[type=text] { flex: 1; padding: 10px 12px; border-radius: 10px; border: 1px solid #ddd; }
-    button { padding: 10px 14px; border: 0; border-radius: 10px; background: #111; color: #fff; cursor: pointer; }
+    .composer { position: sticky; bottom: 0; display: flex; gap: 8px; border-top: 1px solid #eee; padding: 12px; padding-bottom: calc(12px + env(safe-area-inset-bottom)); background: var(--card); }
+    input[type=text] { flex: 1; padding: 12px 14px; border-radius: 12px; border: 1px solid #ddd; font-size: 16px; }
+    button { padding: 12px 16px; border: 0; border-radius: 12px; background: #111; color: #fff; cursor: pointer; font-size: 16px; }
     .memory-section button { width: 100%; margin-top: 4px; }
     button[disabled] { opacity: .5; cursor: not-allowed; }
     .side { padding: 16px; }
     .settings-section, .info-section { margin-bottom: 16px; }
     .field { display: grid; gap: 6px; margin-bottom: 12px; }
-    .field input { padding: 8px 10px; border: 1px solid #ddd; border-radius: 10px; }
+    .field input { padding: 8px 10px; border: 1px solid #dddddd; border-radius: 10px; }
     .toggle { display: flex; align-items: center; gap: 8px; margin: 8px 0 12px; color: var(--sub); }
     .hint { color: var(--sub); font-size: 13px; line-height: 1.4; }
     .pill { font-size: 12px; padding: 2px 8px; border-radius: 999px; background: #eef2ff; color: #3730a3; }
     .ai-controls { display:inline-flex; gap:6px; align-items:center; }
     .replay { background:#0ea5e9; }
     .logo img { width: 250px; padding-bottom: 40%;  }
+    /* Hide settings trigger by default; shown on mobile via media query and JS */
+    .fab-settings { display: none; }
+
+    /* Watermark logo inside chat */
+    .chat .chat-logo {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.07; /* low opacity */
+    }
+    .chat .chat-logo img {
+      max-width: 60%;
+      height: auto;
+      filter: grayscale(10%);
+    }
+
+    /* End-of-file mobile overrides to win cascade */
+    @media (max-width: 768px) {
+      .wrap { padding: 0 !important; max-width: none; }
+      .grid { grid-template-columns: 1fr !important; gap: 0 !important; min-height: calc((var(--app-vh, 1vh) * 100)) !important; }
+      .chat { height: calc((var(--app-vh, 1vh) * 100)) !important; border-radius: 0 !important; }
+      .chat .msgs { padding-top: 44px !important; }
+    }
   </style>
 </head>
 <body>
@@ -156,12 +265,18 @@
         </div>
       </div>
     </div>
-
     <!-- Original Layout (hidden until name entered) -->
     <div id="main-content" class="main-content hidden">
       <div class="grid">
         <!-- Chat -->
         <div class="card chat">
+          <button class="fab-settings" aria-label="Open settings" title="Settings">
+            <span class="icon">⚙️</span>
+            <span class="label">Settings</span>
+          </button>
+          <div class="chat-logo">
+            <img src="https://www.dropbox.com/scl/fi/fogsoodcimeqlo99a6se9/my-logo.png?rlkey=guizxlzukoo71kz422r3k7ukd&st=sb8u2qng&raw=1" alt="Logo watermark" />
+          </div>
           <div id="msgs" class="msgs"></div>
           <div class="composer">
             <input id="user-input" type="text" placeholder="Ask me anything about Saw Bhone Htet..." />
@@ -171,6 +286,10 @@
 
         <!-- Settings Panel -->
         <div class="card side">
+          <div class="drawer-header">
+            <span class="drawer-title">Settings</span>
+            <button class="close-drawer" aria-label="Close settings">✕</button>
+          </div>
           <div class="user-info">
             <span class="user-name" id="display-name">Guest</span>
             <button onclick="changeName()" class="change-name-btn">Change Name</button>
@@ -196,7 +315,10 @@
       </div>
     </div>
   </div>
+  <!-- Mobile drawer backdrop -->
+  <div class="side-backdrop" style="display:none"></div>
 
+  <script src="ui.js" defer></script>
   <script src="app.js"></script>
 </body>
 </html>
